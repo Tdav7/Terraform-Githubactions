@@ -1,21 +1,19 @@
 resource "aws_instance" "aws_ubuntu" {
   instance_type          = "t2.micro"
   ami                    = data.aws_ami.ubuntu.id
-  user_data              = <<EOF
-    #!/bin/bash 
-    sudo apt update -y &&
-    sudo apt install -y nginx
-    echo "Hello World" > /var/www/html/index.html
-  EOF
-}  
+  user_data              = file("userdata.tpl")
+  vpc_security_group_ids = ["${aws_security_group.demo_sg.id}"]
+}
 
 
 # Default VPC
-resource "aws_default_vpc" "default" {}
+resource "aws_default_vpc" "default" {
+
+    }
 
 # Security group
 resource "aws_security_group" "demo_sg" {
-  name        = "demo_sg"
+  name        = "new_demo"
   description = "allow ssh on 22 & http on port 80"
   vpc_id      = aws_default_vpc.default.id
 
